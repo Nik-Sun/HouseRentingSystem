@@ -1,45 +1,71 @@
-﻿using HouseRentingSystem.Models;
+﻿using HouseRentingSystem.Data;
+using HouseRentingSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HouseRentingSystem.Controllers
 {
     public class HouseController : Controller
     {
+        private ApplicationDbContext context;
 
-        private List<HouseDetailViewModel> houses = new List<HouseDetailViewModel>
+        public HouseController(ApplicationDbContext ctx)
         {
-            new HouseDetailViewModel()
-            {
-                Id=1,
-                Title = "Lake House",
-                Address = "Sofia,Bulgaria 33",
-                ImageUrl = "https://media1.ispdd.com/projects/big/proekt-za-kashta-Varna-R5rH4-68627028273658452.jpg"
-            },
-              new HouseDetailViewModel()
-            {
-                 Id = 2,
-                Title = "Another house",
-                Address = "Sofia,Drujba 45",
-                ImageUrl = "https://photo.barnes-international.com/annonces/bms/181/xl/733272875e7030f2ef7eb6.19188976_7dbf53b483_1920.jpg"
-            },
-                new HouseDetailViewModel()
-            {
-                    Id = 3,
-                Title = "Other house",
-                Address = "Sofia,Lulin 22",
-                ImageUrl = "https://www.rocketmortgage.com/resources-cmsassets/RocketMortgage.com/Article_Images/Large_Images/TypesOfHomes/types-of-homes-hero.jpg"
-            }
-        };
+            context = ctx;
+        }
         public IActionResult AllHouses()
         {
+            var houses = this.context.Houses
+                .Select(h => new HouseDetailViewModel
+                {
+                    Address = h.Address,
+                    Id = h.Id,
+                    ImageUrl = h.ImageUrl,
+                    Title = h.Title,
+                }).ToList();
 
             return View(houses);
         }
 
-        //[HttpGet(nameof(HouseDetails) + "/{id}")]
+        [Authorize]
+        public IActionResult Mine()
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
+                return BadRequest();
+            }
+
+
+            var myHouses = context.Houses
+                .Where(h => h.Agent.UserId == currentUserId)
+                .Select(h => new HouseDetailViewModel
+                {
+                    Address = h.Address,
+                    Id = h.Id,
+                    ImageUrl = h.ImageUrl,
+                    Title = h.Title,
+                }).ToList();
+
+            return View(myHouses);
+        }
+
         public IActionResult HouseDetails(int id)
         {
-            var model = houses.Where(h => h.Id == id).FirstOrDefault();
+            var model = context.Houses.Where(h => h.Id == id)
+                .Select(h => new HouseDetailViewModel
+                {
+                    Id = id,
+                     Address = h.Address,
+                     ImageUrl= h.ImageUrl,
+                     Title= h.Title,
+                }).FirstOrDefault();
+
+            if (model == null)
+            {
+                return BadRequest();
+            }
             return View(model);
         }
     }

@@ -7,6 +7,7 @@ namespace HouseRentingSystem.Controllers
     public class HomeController : Controller
     {
         private ApplicationDbContext context;
+
         public HomeController(ApplicationDbContext ctx)
         {
             context = ctx;
