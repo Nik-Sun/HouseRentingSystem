@@ -1,4 +1,5 @@
 using HouseRentingSystem.Data;
+using HouseRentingSystem.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,9 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(ApplicationDbContext));
 
+// IMPORTANT!!!
+builder.Services.AddScoped<IHouseService,HouseService>();
+// IMPORTANT!!!
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
