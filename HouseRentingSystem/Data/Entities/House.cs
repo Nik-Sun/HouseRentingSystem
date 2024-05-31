@@ -1,57 +1,44 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
+using static HouseRentingSystem.Data.DataConstants.House;
 
 namespace HouseRentingSystem.Data.Entities
 {
     public class House
     {
-        [Key]
-        public int Id { get; set; }
+        public int Id { get; init; }
 
         [Required]
-        [MaxLength(50)]
-        public string Title { get; set; }
+        [MaxLength(TitleMaxLength)]
+        public string Title { get; set; } = null!;
 
         [Required]
-        [MaxLength(150)]
-        public string Address { get; set; }
-
-
-        [Required]
-        [MaxLength(500)]
-        public string Description { get; set; }
+        [MaxLength(AddressMaxLength)]
+        public string Address { get; set; } = null!;
 
         [Required]
-        public string ImageUrl { get; set; }
+        [MaxLength(DescriptionMaxLength)]
+        public string Description { get; set; } = null!;
 
         [Required]
+        public string ImageUrl { get; set; } = null!;
+
+        [Column(TypeName = "decimal(12,3)")]
         public decimal PricePerMonth { get; set; }
 
-        [Required]
-        [ForeignKey(nameof(Category))]
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
 
-        [Required]
-        [ForeignKey(nameof(Agent))]
+        public Category Category { get; init; } = null!;
+
         public Guid AgentId { get; set; }
-        public Agent Agent { get; set; }
 
-        [ForeignKey(nameof(Renter))]
+        public Agent Agent { get; init; } = null!;
+
         public string? RenterId { get; set; }
 
         public IdentityUser? Renter { get; set; }
     }
 }
-//Title – a string with min length 10 and max length 50 (required)
-//Address – a string with min length 30 and max length 150 (required)
-//Description – a string with min length 50 and max length 500 (required)
-//ImageUrl – a string (required)
-//PricePerMonth – a decimal with min value 0 and max value 2000 (required)
-//CategoryId – an integer (required)
-//Category – a Category object
-//AgentId – a Guid (required)
-//Agent – an Agent object
-//RenterId – a string
-//Renter – an IdentityUser object (the default user class in ASP.NET)

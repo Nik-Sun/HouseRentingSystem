@@ -1,21 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+using static HouseRentingSystem.Data.DataConstants.Category;
+
 namespace HouseRentingSystem.Data.Entities
 {
     public class Category
     {
-
-        public Category()
-        {
-            Houses = new HashSet<House>();
-        }
-        [Key]
-        public int Id { get; set; }
+        public int Id { get; init; }
 
         [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
+        [MaxLength(NameMaxLength)]
+        public string Name { get; set; } = null!;
 
-        public HashSet<House> Houses { get; set; }
+        public IEnumerable<House> Houses { get; init; } = new List<House>();
     }
 }

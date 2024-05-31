@@ -1,29 +1,23 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+
+using static HouseRentingSystem.Data.DataConstants.Agent;
 
 namespace HouseRentingSystem.Data.Entities
 {
     public class Agent
     {
-        [Key]
-        public Guid Id { get; set; }
+        public Guid Id { get; init; } = Guid.NewGuid();
 
         [Required]
-        [MaxLength(15)]
-        public string PhoneNumber { get; set; }
+        [MaxLength(PhoneNumberMaxLength)]
+        public string PhoneNumber { get; set; } = null!;
 
         [Required]
-        [ForeignKey(nameof(User))]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = null!;
 
-        public IdentityUser User { get; set; }
+        public IdentityUser User { get; init; } = null!;
 
-        public HashSet<House> ManagedHouses { get; set; }
+        public IEnumerable<House> ManagedHouses { get; set; } = new List<House>();
     }
 }
-//Id – a Guid, Primary Key
-//PhoneNumber – a string with min length 7 and max length 15 (required)
-//UserId – a string (required)
-//User – an IdentityUser object
-//ManagedHouses – a collection of House objects
